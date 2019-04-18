@@ -1,0 +1,76 @@
+package sample.entity;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "raion", schema = "komraz", catalog = "")
+public class RaionEntity {
+    private int id;
+    private String name;
+    private String shifr;
+    private String kodOkato;
+
+    @Id
+    @Column(name = "id")
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Basic
+    @Column(name = "name")
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Basic
+    @Column(name = "shifr")
+    public String getShifr() {
+        return shifr;
+    }
+
+    public void setShifr(String shifr) {
+        this.shifr = shifr;
+    }
+
+    @Basic
+    @Column(name = "kod_okato")
+    public String getKodOkato() {
+        return kodOkato;
+    }
+
+    public void setKodOkato(String kodOkato) {
+        this.kodOkato = kodOkato;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RaionEntity that = (RaionEntity) o;
+
+        if (id != that.id) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (shifr != null ? !shifr.equals(that.shifr) : that.shifr != null) return false;
+        if (kodOkato != null ? !kodOkato.equals(that.kodOkato) : that.kodOkato != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (shifr != null ? shifr.hashCode() : 0);
+        result = 31 * result + (kodOkato != null ? kodOkato.hashCode() : 0);
+        return result;
+    }
+}
