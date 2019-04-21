@@ -8,7 +8,7 @@ public class AdresEntity {
     private int id;
     private String name;
     private String kodPoKladr;
-    private Integer raionId;
+    private RaionEntity raion;
 
     @Id
     @Column(name = "id")
@@ -40,14 +40,14 @@ public class AdresEntity {
         this.kodPoKladr = kodPoKladr;
     }
 
-    @Basic
-    @Column(name = "raion_id")
-    public Integer getRaionId() {
-        return raionId;
+    @ManyToOne
+    @JoinColumn(name = "raion_id")
+    public RaionEntity getRaion() {
+        return raion;
     }
 
-    public void setRaionId(Integer raionId) {
-        this.raionId = raionId;
+    public void setRaion(RaionEntity raion) {
+        this.raion = raion;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class AdresEntity {
         if (id != that.id) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (kodPoKladr != null ? !kodPoKladr.equals(that.kodPoKladr) : that.kodPoKladr != null) return false;
-        if (raionId != null ? !raionId.equals(that.raionId) : that.raionId != null) return false;
+        if (raion != null ? !raion.equals(that.raion) : that.raion != null) return false;
 
         return true;
     }
@@ -70,7 +70,7 @@ public class AdresEntity {
         int result = id;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (kodPoKladr != null ? kodPoKladr.hashCode() : 0);
-        result = 31 * result + (raionId != null ? raionId.hashCode() : 0);
+        result = 31 * result + (raion != null ? raion.hashCode() : 0);
         return result;
     }
 }

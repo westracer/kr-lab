@@ -73,4 +73,9 @@ public class RaionEntity {
         result = 31 * result + (kodOkato != null ? kodOkato.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return this.name + " [" + this.kodOkato + "]";
+    }
 }
