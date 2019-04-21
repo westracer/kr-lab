@@ -73,4 +73,9 @@ public class AdresEntity {
         result = 31 * result + (raion != null ? raion.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

@@ -7,8 +7,8 @@ import javax.persistence.*;
 public class ObjectEntity {
     private int id;
     private double ploshad;
-    private int adresId;
-    private int dogovorId;
+    private AdresEntity adres;
+    private DogovorEntity dogovor;
 
     @Id
     @Column(name = "id")
@@ -30,24 +30,24 @@ public class ObjectEntity {
         this.ploshad = ploshad;
     }
 
-    @Basic
-    @Column(name = "adres_id")
-    public int getAdresId() {
-        return adresId;
+    @ManyToOne
+    @JoinColumn(name = "adres_id")
+    public AdresEntity getAdres() {
+        return adres;
     }
 
-    public void setAdresId(int adresId) {
-        this.adresId = adresId;
+    public void setAdres(AdresEntity adres) {
+        this.adres = adres;
     }
 
-    @Basic
-    @Column(name = "dogovor_id")
-    public int getDogovorId() {
-        return dogovorId;
+    @ManyToOne
+    @JoinColumn(name = "dogovor_id")
+    public DogovorEntity getDogovor() {
+        return dogovor;
     }
 
-    public void setDogovorId(int dogovorId) {
-        this.dogovorId = dogovorId;
+    public void setDogovor(DogovorEntity dogovor) {
+        this.dogovor = dogovor;
     }
 
     @Override
@@ -59,8 +59,8 @@ public class ObjectEntity {
 
         if (id != that.id) return false;
         if (Double.compare(that.ploshad, ploshad) != 0) return false;
-        if (adresId != that.adresId) return false;
-        if (dogovorId != that.dogovorId) return false;
+        if (adres != that.adres) return false;
+        if (dogovor != that.dogovor) return false;
 
         return true;
     }
@@ -72,8 +72,8 @@ public class ObjectEntity {
         result = id;
         temp = Double.doubleToLongBits(ploshad);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + adresId;
-        result = 31 * result + dogovorId;
+        result = 31 * result + adres.hashCode();
+        result = 31 * result + dogovor.hashCode();
         return result;
     }
 }
