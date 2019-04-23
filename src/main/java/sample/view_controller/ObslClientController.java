@@ -1,5 +1,6 @@
 package sample.view_controller;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -11,12 +12,12 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
-import sample.entity.AdresEntity;
-import sample.entity.DogovorEntity;
-import sample.entity.ObjectEntity;
-import sample.entity.RaionEntity;
+import sample.entity.*;
+import sample.util.DateEditingCell;
 import sample.util.DbHelper;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings({"unchecked", "Duplicates"})
@@ -99,7 +100,7 @@ public class ObslClientController {
         column3.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<RaionEntity>() {
             @Override
             public String toString(RaionEntity r) {
-                return r != null ? r.toString() : "";
+                return r != null ? r.toString() : "Выберите район";
             }
 
             @Override
@@ -120,6 +121,48 @@ public class ObslClientController {
         currentEntity = AdresEntity.class;
     }
 
+    public void initSchetchikTable() {
+        final double NOMER_COL_WIDTH = 100;
+        final double DATE_COL_WIDTH = 250;
+
+        List allDogovors = DbHelper.getAllEntitiesFromTable(DogovorEntity.class);
+        List allSchetchik = DbHelper.getAllEntitiesFromTable(SchetchikEntity.class);
+
+        TableColumn<SchetchikEntity, String> column1 = new TableColumn<>("Номер");
+        column1.setMinWidth(NOMER_COL_WIDTH);
+        column1.setMaxWidth(NOMER_COL_WIDTH);
+        column1.setPrefWidth(NOMER_COL_WIDTH);
+        column1.setCellValueFactory(new PropertyValueFactory<>("nomer"));
+        column1.setCellFactory(TextFieldTableCell.forTableColumn());
+        column1.setOnEditCommit((val) -> {
+            SchetchikEntity entity = val.getRowValue();
+            entity.setNomer(val.getNewValue());
+            DbHelper.saveOrUpdate(entity);
+        });
+
+        TableColumn<SchetchikEntity, Date> column2 = new TableColumn<>("Дата поверки");
+        column2.setCellValueFactory(cellData -> {
+            Date sqlDate = cellData.getValue().getProverkaDate();
+            return new SimpleObjectProperty(new Date(sqlDate.getTime()));
+        });
+        column2.setMinWidth(DATE_COL_WIDTH);
+        column2.setMaxWidth(DATE_COL_WIDTH);
+        column2.setPrefWidth(DATE_COL_WIDTH);
+        column2.setCellFactory(param -> new DateEditingCell<>());
+        column2.setOnEditCommit((val) -> {
+            SchetchikEntity entity = val.getRowValue();
+            Date date = val.getNewValue();
+            entity.setProverkaDate(new java.sql.Date(date.getTime()));
+            DbHelper.saveOrUpdate(entity);
+        });
+
+        table.getColumns().setAll(column1, column2);
+        _addDeleteColumn();
+
+        table.getItems().setAll(allSchetchik);
+        currentEntity = SchetchikEntity.class;
+    }
+
     public void initObjectTable() {
         final double PLOSHAD_COL_WIDTH = 100;
 
@@ -132,7 +175,7 @@ public class ObslClientController {
         column0.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<DogovorEntity>() {
             @Override
             public String toString(DogovorEntity d) {
-                return d != null ? d.toString() : "";
+                return d != null ? d.toString() : "Выберите договор";
             }
 
             @Override
@@ -170,7 +213,7 @@ public class ObslClientController {
         column2.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<AdresEntity>() {
             @Override
             public String toString(AdresEntity a) {
-                return a != null ? a.toString() : "";
+                return a != null ? a.toString() : "Выберите адрес";
             }
 
             @Override

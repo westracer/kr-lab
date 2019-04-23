@@ -9,12 +9,13 @@ public class SchetchikEntity {
     private int id;
     private String nomer;
     private Date proverkaDate;
-    private int tipId;
+    private TipElektrEntity tip;
     private int tarifId;
     private int tipElId;
     private int objectId;
 
     @Id
+    @GeneratedValue(generator="increment")
     @Column(name = "id")
     public int getId() {
         return id;
@@ -44,14 +45,14 @@ public class SchetchikEntity {
         this.proverkaDate = proverkaDate;
     }
 
-    @Basic
-    @Column(name = "tip_id")
-    public int getTipId() {
-        return tipId;
+    @ManyToOne
+    @JoinColumn(name = "tip_id")
+    public TipElektrEntity getTip() {
+        return tip;
     }
 
-    public void setTipId(int tipId) {
-        this.tipId = tipId;
+    public void setTip(TipElektrEntity tipId) {
+        this.tip = tipId;
     }
 
     @Basic
@@ -92,7 +93,7 @@ public class SchetchikEntity {
         SchetchikEntity that = (SchetchikEntity) o;
 
         if (id != that.id) return false;
-        if (tipId != that.tipId) return false;
+        if (tip != that.tip) return false;
         if (tarifId != that.tarifId) return false;
         if (tipElId != that.tipElId) return false;
         if (objectId != that.objectId) return false;
@@ -107,7 +108,7 @@ public class SchetchikEntity {
         int result = id;
         result = 31 * result + (nomer != null ? nomer.hashCode() : 0);
         result = 31 * result + (proverkaDate != null ? proverkaDate.hashCode() : 0);
-        result = 31 * result + tipId;
+        result = 31 * result + tip.hashCode();
         result = 31 * result + tarifId;
         result = 31 * result + tipElId;
         result = 31 * result + objectId;

@@ -23,6 +23,7 @@
             <items>
               <MenuItem mnemonicParsing="false" onAction="#initAdresTable" text="Адреса" />
                   <MenuItem mnemonicParsing="false" onAction="#initObjectTable" text="Объекты" />
+                  <MenuItem mnemonicParsing="false" onAction="#initSchetchikTable" text="Счетчики" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
