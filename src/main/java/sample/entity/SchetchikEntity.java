@@ -9,10 +9,10 @@ public class SchetchikEntity {
     private int id;
     private String nomer;
     private Date proverkaDate;
-    private TipElektrEntity tip;
-    private int tarifId;
-    private int tipElId;
-    private int objectId;
+    private TipSchetchikaEntity tip;
+    private TarifEntity tarif;
+    private TipElektrEntity tipEl;
+    private ObjectEntity object;
 
     @Id
     @GeneratedValue(generator="increment")
@@ -47,42 +47,42 @@ public class SchetchikEntity {
 
     @ManyToOne
     @JoinColumn(name = "tip_id")
-    public TipElektrEntity getTip() {
+    public TipSchetchikaEntity getTip() {
         return tip;
     }
 
-    public void setTip(TipElektrEntity tipId) {
+    public void setTip(TipSchetchikaEntity tipId) {
         this.tip = tipId;
     }
 
-    @Basic
-    @Column(name = "tarif_id")
-    public int getTarifId() {
-        return tarifId;
+    @ManyToOne
+    @JoinColumn(name = "tarif_id")
+    public TarifEntity getTarifId() {
+        return tarif;
     }
 
-    public void setTarifId(int tarifId) {
-        this.tarifId = tarifId;
+    public void setTarifId(TarifEntity tarif) {
+        this.tarif = tarif;
     }
 
-    @Basic
-    @Column(name = "tip_el_id")
-    public int getTipElId() {
-        return tipElId;
+    @ManyToOne
+    @JoinColumn(name = "tip_el_id")
+    public TipElektrEntity getTipEl() {
+        return tipEl;
     }
 
-    public void setTipElId(int tipElId) {
-        this.tipElId = tipElId;
+    public void setTipEl(TipElektrEntity tipElId) {
+        this.tipEl = tipElId;
     }
 
-    @Basic
-    @Column(name = "object_id")
-    public int getObjectId() {
-        return objectId;
+    @ManyToOne
+    @JoinColumn(name = "object_id")
+    public ObjectEntity getObjectId() {
+        return object;
     }
 
-    public void setObjectId(int objectId) {
-        this.objectId = objectId;
+    public void setObjectId(ObjectEntity objectId) {
+        this.object = object;
     }
 
     @Override
@@ -94,9 +94,9 @@ public class SchetchikEntity {
 
         if (id != that.id) return false;
         if (tip != that.tip) return false;
-        if (tarifId != that.tarifId) return false;
-        if (tipElId != that.tipElId) return false;
-        if (objectId != that.objectId) return false;
+        if (tarif != that.tarif) return false;
+        if (tipEl != that.tipEl) return false;
+        if (object != that.object) return false;
         if (nomer != null ? !nomer.equals(that.nomer) : that.nomer != null) return false;
         if (proverkaDate != null ? !proverkaDate.equals(that.proverkaDate) : that.proverkaDate != null) return false;
 
@@ -109,9 +109,9 @@ public class SchetchikEntity {
         result = 31 * result + (nomer != null ? nomer.hashCode() : 0);
         result = 31 * result + (proverkaDate != null ? proverkaDate.hashCode() : 0);
         result = 31 * result + tip.hashCode();
-        result = 31 * result + tarifId;
-        result = 31 * result + tipElId;
-        result = 31 * result + objectId;
+        result = 31 * result + tarif.hashCode();
+        result = 31 * result + tipEl.hashCode();
+        result = 31 * result + object.hashCode();
         return result;
     }
 }

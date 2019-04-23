@@ -4,6 +4,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.exception.JDBCConnectionException;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -31,17 +32,25 @@ public class DbHelper {
     }
 
     private static void checkSession() {
-        if (session == null || !session.isOpen()) {
+        if (session == null || !session.isConnected()) {
             session = getSession();
         }
+    }
+
+    private static void commitUpdate(Object entity) throws JDBCConnectionException {
+        session.beginTransaction();
+        session.saveOrUpdate(entity);
+        session.getTransaction().commit();
     }
 
     public static void saveOrUpdate(Object entity) {
         checkSession();
 
-        session.beginTransaction();
-        session.saveOrUpdate(entity);
-        session.getTransaction().commit();
+        try {
+            commitUpdate(entity);
+        } catch (JDBCConnectionException ex) {
+            commitUpdate(entity);
+        }
     }
 
     public static void remove(Object entity) {

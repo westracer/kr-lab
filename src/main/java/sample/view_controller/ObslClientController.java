@@ -16,7 +16,6 @@ import sample.entity.*;
 import sample.util.DateEditingCell;
 import sample.util.DbHelper;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -125,7 +124,8 @@ public class ObslClientController {
         final double NOMER_COL_WIDTH = 100;
         final double DATE_COL_WIDTH = 250;
 
-        List allDogovors = DbHelper.getAllEntitiesFromTable(DogovorEntity.class);
+        List allTip = DbHelper.getAllEntitiesFromTable(TipSchetchikaEntity.class);
+        List allTipEl = DbHelper.getAllEntitiesFromTable(TipElektrEntity.class);
         List allSchetchik = DbHelper.getAllEntitiesFromTable(SchetchikEntity.class);
 
         TableColumn<SchetchikEntity, String> column1 = new TableColumn<>("Номер");
@@ -143,7 +143,7 @@ public class ObslClientController {
         TableColumn<SchetchikEntity, Date> column2 = new TableColumn<>("Дата поверки");
         column2.setCellValueFactory(cellData -> {
             Date sqlDate = cellData.getValue().getProverkaDate();
-            return new SimpleObjectProperty(new Date(sqlDate.getTime()));
+            return sqlDate != null ? new SimpleObjectProperty(new Date(sqlDate.getTime())) : null;
         });
         column2.setMinWidth(DATE_COL_WIDTH);
         column2.setMaxWidth(DATE_COL_WIDTH);
@@ -156,7 +156,25 @@ public class ObslClientController {
             DbHelper.saveOrUpdate(entity);
         });
 
-        table.getColumns().setAll(column1, column2);
+        TableColumn<SchetchikEntity, TipElektrEntity> column3 = new TableColumn<>("Тип электричества (заяв./прис./макс.)");
+        column3.setCellValueFactory(new PropertyValueFactory<>("tipEl"));
+        column3.setCellFactory(ComboBoxTableCell.forTableColumn(FXCollections.observableArrayList(allTipEl)));
+        column3.setOnEditCommit((val) -> {
+            SchetchikEntity entity = val.getRowValue();
+            entity.setTipEl(val.getNewValue());
+            DbHelper.saveOrUpdate(entity);
+        });
+
+        TableColumn<SchetchikEntity, TipSchetchikaEntity> column4 = new TableColumn<>("Тип счетчика");
+        column4.setCellValueFactory(new PropertyValueFactory<>("tip"));
+        column4.setCellFactory(ComboBoxTableCell.forTableColumn(FXCollections.observableArrayList(allTip)));
+        column4.setOnEditCommit((val) -> {
+            SchetchikEntity entity = val.getRowValue();
+            entity.setTip(val.getNewValue());
+            DbHelper.saveOrUpdate(entity);
+        });
+
+        table.getColumns().setAll(column1, column2, column3, column4);
         _addDeleteColumn();
 
         table.getItems().setAll(allSchetchik);
@@ -210,17 +228,7 @@ public class ObslClientController {
 
         TableColumn<ObjectEntity, AdresEntity> column2 = new TableColumn<>("Адрес");
         column2.setCellValueFactory(new PropertyValueFactory<>("adres"));
-        column2.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<AdresEntity>() {
-            @Override
-            public String toString(AdresEntity a) {
-                return a != null ? a.toString() : "Выберите адрес";
-            }
-
-            @Override
-            public AdresEntity fromString(String string) {
-                return null;
-            }
-        }, FXCollections.observableArrayList(allAddresses)));
+        column2.setCellFactory(ComboBoxTableCell.forTableColumn(FXCollections.observableArrayList(allAddresses)));
         column2.setOnEditCommit((val) -> {
             ObjectEntity entity = val.getRowValue();
             entity.setAdres(val.getNewValue());
@@ -244,6 +252,8 @@ public class ObslClientController {
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Невозможно создать строку");
             alert.showAndWait();
+
+            e.printStackTrace();
         }
     }
 }

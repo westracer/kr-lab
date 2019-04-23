@@ -28,7 +28,7 @@ public class DateEditingCell<S> extends TableCell<S, Date> {
     public void cancelEdit() {
         super.cancelEdit();
 
-        setText(getDate().toString());
+        setDateText();
         setGraphic(null);
     }
 
@@ -47,7 +47,7 @@ public class DateEditingCell<S> extends TableCell<S, Date> {
                 setText(null);
                 setGraphic(datePicker);
             } else {
-                setText(getDate().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)));
+                setDateText();
                 setGraphic(null);
             }
         }
@@ -67,7 +67,12 @@ public class DateEditingCell<S> extends TableCell<S, Date> {
 //            });
     }
 
+    private void setDateText() {
+        LocalDate date = getDate();
+        setText(date != null ? date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)) : "");
+    }
+
     private LocalDate getDate() {
-        return getItem() == null ? LocalDate.now() : getItem().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return getItem() == null ? null : getItem().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 }

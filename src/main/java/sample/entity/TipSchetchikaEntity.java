@@ -87,4 +87,25 @@ public class TipSchetchikaEntity {
         result = 31 * result + (klassTochnosti != null ? klassTochnosti.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(this.shifr + ": ");
+
+        if (this.auto == 0) {
+            sb.append("Автомат ");
+        } else {
+            sb.append("Неавтомат ");
+        }
+
+        if (this.faz == 1) {
+            sb.append("однофаз ");
+        } else {
+            sb.append("трехфаз ");
+        }
+
+        sb.append(this.klassTochnosti);
+
+        return sb.toString();
+    }
 }
