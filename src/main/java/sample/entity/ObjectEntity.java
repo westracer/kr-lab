@@ -11,6 +11,7 @@ public class ObjectEntity {
     private DogovorEntity dogovor;
 
     @Id
+    @GeneratedValue(generator="increment")
     @Column(name = "id")
     public int getId() {
         return id;

@@ -11,6 +11,7 @@ public class AdresEntity {
     private RaionEntity raion;
 
     @Id
+    @GeneratedValue(generator="increment")
     @Column(name = "id")
     public int getId() {
         return id;

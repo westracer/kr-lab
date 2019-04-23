@@ -44,6 +44,14 @@ public class DbHelper {
         session.getTransaction().commit();
     }
 
+    public static void remove(Object entity) {
+        checkSession();
+
+        session.beginTransaction();
+        session.remove(entity);
+        session.getTransaction().commit();
+    }
+
     // TODO: generic list type
     public static List getAllEntitiesFromTable(Class entityClass) {
         checkSession();

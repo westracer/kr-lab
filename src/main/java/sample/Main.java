@@ -23,9 +23,8 @@ public class Main extends Application {
         primaryStage.show();
 
         ObslClientController controller = loader.getController();
-        controller.table.prefWidthProperty().bind(controller.flowPane.widthProperty().subtract(20));
-        controller.table.prefHeightProperty().bind(controller.flowPane.heightProperty().subtract(20));
-
+//        controller.table.prefWidthProperty().bind(controller.flowPane.widthProperty().subtract(20));
+//        controller.table.prefHeightProperty().bind(controller.flowPane.heightProperty().subtract(20));
         controller.initAdresTable();
     }
 
