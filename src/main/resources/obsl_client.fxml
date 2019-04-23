@@ -14,9 +14,10 @@
    <children>
       <MenuBar>
         <menus>
-          <Menu mnemonicParsing="false" text="File">
+          <Menu mnemonicParsing="false" text="Файл">
             <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
+              <MenuItem mnemonicParsing="false" onAction="#exportDogovor" text="Экспорт договора" />
+                  <MenuItem mnemonicParsing="false" onAction="#exit" text="Выход" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Перейти">
@@ -26,9 +27,9 @@
                   <MenuItem mnemonicParsing="false" onAction="#initSchetchikTable" text="Счетчики" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Help">
+          <Menu mnemonicParsing="false" text="Помощь">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem mnemonicParsing="false" text="О программе" />
             </items>
           </Menu>
         </menus>

@@ -7,7 +7,7 @@ import java.sql.Date;
 @Table(name = "dogovor", schema = "komraz", catalog = "")
 public class DogovorEntity {
     private int id;
-    private int urLicoId;
+    private UrLicoEntity urLico;
     private String nomer;
     private Date date;
 
@@ -21,14 +21,14 @@ public class DogovorEntity {
         this.id = id;
     }
 
-    @Basic
-    @Column(name = "ur_lico_id")
-    public int getUrLicoId() {
-        return urLicoId;
+    @ManyToOne
+    @JoinColumn(name = "ur_lico_id")
+    public UrLicoEntity getUrLico() {
+        return urLico;
     }
 
-    public void setUrLicoId(int urLicoId) {
-        this.urLicoId = urLicoId;
+    public void setUrLico(UrLicoEntity urLico) {
+        this.urLico = urLico;
     }
 
     @Basic
@@ -59,7 +59,7 @@ public class DogovorEntity {
         DogovorEntity that = (DogovorEntity) o;
 
         if (id != that.id) return false;
-        if (urLicoId != that.urLicoId) return false;
+        if (urLico != that.urLico) return false;
         if (nomer != null ? !nomer.equals(that.nomer) : that.nomer != null) return false;
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
 
@@ -69,7 +69,7 @@ public class DogovorEntity {
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + urLicoId;
+        result = 31 * result + urLico.hashCode();
         result = 31 * result + (nomer != null ? nomer.hashCode() : 0);
         result = 31 * result + (date != null ? date.hashCode() : 0);
         return result;

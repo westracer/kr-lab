@@ -12,9 +12,11 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
+import sample.Main;
 import sample.entity.*;
 import sample.util.DateEditingCell;
 import sample.util.DbHelper;
+import sample.util.DogovorEditor;
 
 import java.util.Date;
 import java.util.List;
@@ -252,8 +254,23 @@ public class ObslClientController {
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Невозможно создать строку");
             alert.showAndWait();
-
-            e.printStackTrace();
         }
+    }
+
+    public void exportDogovor() {
+        DogovorEditor de = DogovorEditor.getInstance(Main.class.getResource("../template/dogovor.docx"));
+
+        // TODO: throw exception
+        if (de == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Ошибка при экспорте");
+            alert.showAndWait();
+            return;
+        }
+
+        de.replace();
+    }
+
+    public void exit() {
+        System.exit(0);
     }
 }
