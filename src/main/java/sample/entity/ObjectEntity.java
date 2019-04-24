@@ -77,4 +77,9 @@ public class ObjectEntity {
         result = 31 * result + dogovor.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return adres.toString();
+    }
 }

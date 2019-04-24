@@ -90,7 +90,11 @@ public class TipSchetchikaEntity {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(this.shifr + ": ");
+        return this.shifr + ": " + toShortString() + this.klassTochnosti;
+    }
+
+    public String toShortString() {
+        StringBuilder sb = new StringBuilder();
 
         if (this.auto == 0) {
             sb.append("Автомат ");
@@ -103,8 +107,6 @@ public class TipSchetchikaEntity {
         } else {
             sb.append("трехфаз ");
         }
-
-        sb.append(this.klassTochnosti);
 
         return sb.toString();
     }

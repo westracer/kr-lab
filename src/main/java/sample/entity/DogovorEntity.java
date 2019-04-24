@@ -1,9 +1,15 @@
 package sample.entity;
 
+import sample.util.DbHelper;
+
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.sql.Date;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "dogovor", schema = "komraz", catalog = "")
@@ -82,6 +88,34 @@ public class DogovorEntity {
         return "Договор №" + nomer;
     }
 
+    @SuppressWarnings("unchecked")
+    public List<SchetchikEntity> allSchetchiki() {
+        DbHelper.checkSession();
+
+        CriteriaBuilder cb = DbHelper.session.getCriteriaBuilder();
+
+        CriteriaQuery cq = cb.createQuery(ObjectEntity.class);
+        Root root = cq.from(ObjectEntity.class);
+        cq = cq.where(cb.equal(root.get("dogovor"), this));
+        TypedQuery allQuery = DbHelper.session.createQuery(cq.select(root));
+        List<ObjectEntity> objects = allQuery.getResultList();
+
+        if (objects.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        cq = cb.createQuery(SchetchikEntity.class);
+        root = cq.from(SchetchikEntity.class);
+        cq = cq.where(
+                root
+                .get("object")
+                .in(objects)
+        );
+        allQuery = DbHelper.session.createQuery(cq.select(root));
+
+        return allQuery.getResultList();
+    }
+
     public String toStringExtended() {
         StringBuilder sb = new StringBuilder(toString());
         if (urLico != null) {
@@ -89,8 +123,7 @@ public class DogovorEntity {
         }
 
         if (date != null) {
-            java.util.Date d = new java.util.Date(date.getTime());
-            sb.append(" от ").append(DateTimeFormatter.ofPattern("dd.MM.yyyy").format(d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
+            sb.append(" от ").append(DateTimeFormatter.ofPattern("dd.MM.yyyy").format(DbHelper.getLocalDate(date)));
         }
 
         return sb.toString();

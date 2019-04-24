@@ -77,11 +77,11 @@ public class SchetchikEntity {
 
     @ManyToOne
     @JoinColumn(name = "object_id")
-    public ObjectEntity getObjectId() {
+    public ObjectEntity getObject() {
         return object;
     }
 
-    public void setObjectId(ObjectEntity objectId) {
+    public void setObject(ObjectEntity object) {
         this.object = object;
     }
 

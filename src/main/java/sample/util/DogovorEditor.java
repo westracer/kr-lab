@@ -1,12 +1,14 @@
 package sample.util;
 
-import com.independentsoft.office.ExtendedBoolean;
 import com.independentsoft.office.word.Paragraph;
 import com.independentsoft.office.word.Run;
 import com.independentsoft.office.word.WordDocument;
 import com.independentsoft.office.word.tables.Cell;
 import com.independentsoft.office.word.tables.Row;
 import com.independentsoft.office.word.tables.Table;
+import sample.Main;
+import sample.entity.DogovorEntity;
+import sample.entity.SchetchikEntity;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -15,6 +17,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Locale;
 
 public class DogovorEditor {
@@ -30,8 +33,9 @@ public class DogovorEditor {
 
     private DogovorEditor() {}
 
-    public static DogovorEditor getInstance(URL url) {
+    public static DogovorEditor getInstance() {
         DogovorEditor de = new DogovorEditor();
+        URL url = Main.class.getResource("../template/dogovor.docx");
 
         try {
             de.is = url.openStream();
@@ -43,29 +47,39 @@ public class DogovorEditor {
         return de;
     }
 
-    public void replace() {
+    public void replaceAndExport(DogovorEntity dogovor, String savePath) {
         for (TemplateString ts : TemplateString.values()) {
             String templateRepl = "";
             switch (ts) {
                 case DATE_NOW:
-                    templateRepl = DateTimeFormatter.ofPattern(DATE_FORMAT)
-                            .withLocale(new Locale("ru"))
-                            .format(LocalDate.of(2014, 2, 28));
+                    if (dogovor.getDate() != null) {
+                        templateRepl = DateTimeFormatter.ofPattern(DATE_FORMAT)
+                                .withLocale(new Locale("ru"))
+                                .format(DbHelper.getLocalDate(dogovor.getDate()));
+                    }
                     break;
                 case DOC_NUMBER:
-                    templateRepl = "test";
+                    templateRepl += dogovor.getNomer();
                     break;
                 case CUSTOMER_INN:
-                    templateRepl = "test";
+                    if (dogovor.getUrLico() != null) {
+                        templateRepl += dogovor.getUrLico().getInn();
+                    }
                     break;
                 case CUSTOMER_KPP:
-                    templateRepl = "test";
+                    if (dogovor.getUrLico() != null) {
+                        templateRepl += dogovor.getUrLico().getKpp();
+                    }
                     break;
                 case CUSTOMER_INFO:
-                    templateRepl = "test";
+                    if (dogovor.getUrLico() != null) {
+                        templateRepl += dogovor.getUrLico().getInfo();
+                    }
                     break;
                 case CUSTOMER_NAME:
-                    templateRepl = "test";
+                    if (dogovor.getUrLico() != null) {
+                        templateRepl += dogovor.getUrLico().getName();
+                    }
                     break;
                 default:
             }
@@ -74,27 +88,41 @@ public class DogovorEditor {
         }
 
         Table table = doc.getTables().get(INDEX_OF_SCHETICHIK_TABLE);
-        Row row = new Row();
 
-        for (int i = 0; i < 7; i++) {
-            Run run1 = new Run(Integer.toString(i));
+        for (SchetchikEntity sch : dogovor.allSchetchiki()) {
+            Row row = new Row();
 
-            Paragraph p = new Paragraph();
-            p.add(run1);
+            String[] cellStrings = new String[7];
+            Arrays.fill(cellStrings, "");
 
-            Cell c = new Cell();
-            c.add(p);
+            cellStrings[0] = sch.getNomer();
+            cellStrings[1] = sch.getObject().getAdres().getName();
+            cellStrings[2] = sch.getTip().toShortString();
+            cellStrings[3] = "" + sch.getTip().getShifr();
+            cellStrings[4] = sch.getTip().getKlassTochnosti();
 
-            row.add(c);
+            LocalDate d = DbHelper.getLocalDate(sch.getProverkaDate());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            cellStrings[5] = formatter.format(d);
+            cellStrings[6] = formatter.format(d.plusYears(1));
+
+            for (String cellString : cellStrings) {
+                Paragraph p = new Paragraph();
+                p.add(new Run(cellString));
+
+                Cell c = new Cell();
+                c.add(p);
+
+                row.add(c);
+            }
+
+            table.add(row);
         }
 
-        table.add(row);
-
         try {
-            String path = "C:\\Users\\westy\\Documents\\Lab shite\\комраз\\test.docx";
-            File f = new File(path);
-            f.delete();
-            doc.save(path);
+            File f = new File(savePath);
+            if (f.exists()) f.delete();
+            doc.save(savePath);
         } catch (IOException e) {
             e.printStackTrace();
         }

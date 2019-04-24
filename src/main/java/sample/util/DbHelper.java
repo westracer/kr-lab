@@ -10,11 +10,13 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 public class DbHelper {
     private static final SessionFactory ourSessionFactory;
-    private static Session session;
+    public static Session session;
 
     static {
         try {
@@ -31,7 +33,7 @@ public class DbHelper {
         return ourSessionFactory.openSession();
     }
 
-    private static void checkSession() {
+    public static void checkSession() {
         if (session == null || !session.isConnected() || !session.isOpen()) {
             session = getSession();
         }
@@ -62,7 +64,13 @@ public class DbHelper {
         session.getTransaction().commit();
     }
 
+    public static LocalDate getLocalDate(java.sql.Date date) {
+        java.util.Date d = new java.util.Date(date.getTime());
+        return d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
     // TODO: generic list type
+    @SuppressWarnings("unchecked")
     public static List getAllEntitiesFromTable(Class entityClass) {
         checkSession();
 

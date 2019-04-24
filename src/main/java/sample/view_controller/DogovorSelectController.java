@@ -5,13 +5,15 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 import javafx.util.Callback;
-import sample.Main;
 import sample.entity.DogovorEntity;
 import sample.entity.UrLicoEntity;
 import sample.util.DbHelper;
 import sample.util.DogovorEditor;
 
+import java.io.File;
 import java.util.List;
 
 @SuppressWarnings({"unchecked", "Duplicates"})
@@ -62,8 +64,24 @@ public class DogovorSelectController {
     }
 
     public void save() {
-        DogovorEditor de = DogovorEditor.getInstance(Main.class.getResource("../template/dogovor.docx"));
+        ObservableList<DogovorEntity> selected = list.getSelectionModel().getSelectedItems();
+        if (selected.size() == 0) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Выберите договор");
+            alert.showAndWait();
+            return;
+        }
 
+        Window currWindow = list.getScene().getWindow();
+
+        FileChooser fileChooser = new FileChooser();
+
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Microsoft Word (DOCX)", "*.docx");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        File file = fileChooser.showSaveDialog(currWindow);
+        if (file == null) return;
+
+        DogovorEditor de = DogovorEditor.getInstance();
         // TODO: throw exception
         if (de == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Ошибка при экспорте");
@@ -71,6 +89,9 @@ public class DogovorSelectController {
             return;
         }
 
-        de.replace();
+        de.replaceAndExport(selected.get(0), file.getPath());
+        de.close();
+
+        currWindow.hide();
     }
 }

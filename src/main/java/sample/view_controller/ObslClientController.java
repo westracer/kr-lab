@@ -267,7 +267,7 @@ public class ObslClientController {
         }
     }
 
-    public void exportDogovor(ActionEvent event) throws IOException {
+    public void exportDogovor() throws IOException {
         Stage stage = new Stage();
         Parent root = FXMLLoader.load(Main.class.getResource("../dogovor_select.fxml"));
         stage.setScene(new Scene(root));
