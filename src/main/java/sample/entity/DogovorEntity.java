@@ -2,6 +2,8 @@ package sample.entity;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "dogovor", schema = "komraz", catalog = "")
@@ -78,5 +80,19 @@ public class DogovorEntity {
     @Override
     public String toString() {
         return "Договор №" + nomer;
+    }
+
+    public String toStringExtended() {
+        StringBuilder sb = new StringBuilder(toString());
+        if (urLico != null) {
+            sb.append(" с ").append(urLico.getName());
+        }
+
+        if (date != null) {
+            java.util.Date d = new java.util.Date(date.getTime());
+            sb.append(" от ").append(DateTimeFormatter.ofPattern("dd.MM.yyyy").format(d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
+        }
+
+        return sb.toString();
     }
 }

@@ -5,10 +5,15 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
@@ -16,8 +21,8 @@ import sample.Main;
 import sample.entity.*;
 import sample.util.DateEditingCell;
 import sample.util.DbHelper;
-import sample.util.DogovorEditor;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +32,11 @@ public class ObslClientController {
 
     @FXML
     public TableView table;
+
+    @FXML
+    public void initialize() {
+        initAdresTable();
+    }
 
     private <T> void _addDeleteColumn() {
         final double BUTTON_COL_WIDTH = 80;
@@ -257,17 +267,14 @@ public class ObslClientController {
         }
     }
 
-    public void exportDogovor() {
-        DogovorEditor de = DogovorEditor.getInstance(Main.class.getResource("../template/dogovor.docx"));
-
-        // TODO: throw exception
-        if (de == null) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Ошибка при экспорте");
-            alert.showAndWait();
-            return;
-        }
-
-        de.replace();
+    public void exportDogovor(ActionEvent event) throws IOException {
+        Stage stage = new Stage();
+        Parent root = FXMLLoader.load(Main.class.getResource("../dogovor_select.fxml"));
+        stage.setScene(new Scene(root));
+        stage.setTitle("Выберите договор");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(table.getScene().getWindow());
+        stage.show();
     }
 
     public void exit() {

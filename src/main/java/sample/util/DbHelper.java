@@ -32,7 +32,13 @@ public class DbHelper {
     }
 
     private static void checkSession() {
-        if (session == null || !session.isConnected()) {
+        if (session == null || !session.isConnected() || !session.isOpen()) {
+            session = getSession();
+        }
+
+        try {
+            session.beginTransaction().commit();
+        } catch (JDBCConnectionException ex) {
             session = getSession();
         }
     }
@@ -45,12 +51,7 @@ public class DbHelper {
 
     public static void saveOrUpdate(Object entity) {
         checkSession();
-
-        try {
-            commitUpdate(entity);
-        } catch (JDBCConnectionException ex) {
-            commitUpdate(entity);
-        }
+        commitUpdate(entity);
     }
 
     public static void remove(Object entity) {
