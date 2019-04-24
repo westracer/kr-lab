@@ -85,7 +85,7 @@ public class DogovorEntity {
 
     @Override
     public String toString() {
-        return "Договор №" + nomer;
+        return toStringExtended();
     }
 
     @SuppressWarnings("unchecked")
@@ -117,7 +117,7 @@ public class DogovorEntity {
     }
 
     public String toStringExtended() {
-        StringBuilder sb = new StringBuilder(toString());
+        StringBuilder sb = new StringBuilder("Договор №" + nomer);
         if (urLico != null) {
             sb.append(" с ").append(urLico.getName());
         }

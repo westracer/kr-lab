@@ -38,6 +38,19 @@ public class ObslClientController {
         initAdresTable();
     }
 
+    private void _setDoubleComparator(TableColumn<?, String> column) {
+        column.setComparator((o1, o2) -> {
+            String oa1 = o1 != null && !o1.isEmpty() ? o1 : "0";
+            String oa2 = o2 != null && !o2.isEmpty() ? o2 : "0";
+
+            return Double.compare(Double.parseDouble(oa1), Double.parseDouble(oa2));
+        });
+    }
+
+    private void _setDateComparator(TableColumn<?, Date> column) {
+        column.setComparator((o1, o2) -> o1 != null ? o2 != null ? o1.compareTo(o2) : 1 : -1);
+    }
+
     private <T> void _addDeleteColumn() {
         final double BUTTON_COL_WIDTH = 80;
 
@@ -144,6 +157,7 @@ public class ObslClientController {
         column1.setMinWidth(NOMER_COL_WIDTH);
         column1.setMaxWidth(NOMER_COL_WIDTH);
         column1.setPrefWidth(NOMER_COL_WIDTH);
+        _setDoubleComparator(column1);
         column1.setCellValueFactory(new PropertyValueFactory<>("nomer"));
         column1.setCellFactory(TextFieldTableCell.forTableColumn());
         column1.setOnEditCommit((val) -> {
@@ -153,6 +167,7 @@ public class ObslClientController {
         });
 
         TableColumn<SchetchikEntity, Date> column2 = new TableColumn<>("Дата поверки");
+        _setDateComparator(column2);
         column2.setCellValueFactory(cellData -> {
             Date sqlDate = cellData.getValue().getProverkaDate();
             return sqlDate != null ? new SimpleObjectProperty(new Date(sqlDate.getTime())) : null;
@@ -223,6 +238,7 @@ public class ObslClientController {
         column1.setMinWidth(PLOSHAD_COL_WIDTH);
         column1.setMaxWidth(PLOSHAD_COL_WIDTH);
         column1.setPrefWidth(PLOSHAD_COL_WIDTH);
+        _setDoubleComparator(column1);
         column1.setCellValueFactory(cellData -> new SimpleStringProperty(Double.toString(cellData.getValue().getPloshad())));
         column1.setCellFactory(TextFieldTableCell.forTableColumn());
         column1.setOnEditCommit((val) -> {
