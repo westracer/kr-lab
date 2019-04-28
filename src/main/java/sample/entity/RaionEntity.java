@@ -1,6 +1,7 @@
 package sample.entity;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "raion", schema = "komraz", catalog = "")
@@ -58,9 +59,9 @@ public class RaionEntity {
         RaionEntity that = (RaionEntity) o;
 
         if (id != that.id) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (shifr != null ? !shifr.equals(that.shifr) : that.shifr != null) return false;
-        if (kodOkato != null ? !kodOkato.equals(that.kodOkato) : that.kodOkato != null) return false;
+        if (!Objects.equals(name, that.name)) return false;
+        if (!Objects.equals(shifr, that.shifr)) return false;
+        if (!Objects.equals(kodOkato, that.kodOkato)) return false;
 
         return true;
     }

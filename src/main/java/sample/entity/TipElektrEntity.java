@@ -1,6 +1,7 @@
 package sample.entity;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tip_elektr", schema = "komraz", catalog = "")
@@ -72,7 +73,7 @@ public class TipElektrEntity {
         if (Double.compare(that.prisoed, prisoed) != 0) return false;
         if (Double.compare(that.zayavl, zayavl) != 0) return false;
         if (Double.compare(that.max, max) != 0) return false;
-        if (shifr != null ? !shifr.equals(that.shifr) : that.shifr != null) return false;
+        if (!Objects.equals(shifr, that.shifr)) return false;
 
         return true;
     }

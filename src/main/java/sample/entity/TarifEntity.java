@@ -2,6 +2,7 @@ package sample.entity;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "tarif", schema = "komraz", catalog = "")
@@ -72,8 +73,8 @@ public class TarifEntity {
         if (id != that.id) return false;
         if (Double.compare(that.price, price) != 0) return false;
         if (shifr != that.shifr) return false;
-        if (pokazatel != null ? !pokazatel.equals(that.pokazatel) : that.pokazatel != null) return false;
-        if (startDate != null ? !startDate.equals(that.startDate) : that.startDate != null) return false;
+        if (!Objects.equals(pokazatel, that.pokazatel)) return false;
+        if (!Objects.equals(startDate, that.startDate)) return false;
 
         return true;
     }

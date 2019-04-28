@@ -10,6 +10,7 @@ import java.sql.Date;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "dogovor", schema = "komraz", catalog = "")
@@ -68,8 +69,8 @@ public class DogovorEntity {
 
         if (id != that.id) return false;
         if (urLico != that.urLico) return false;
-        if (nomer != null ? !nomer.equals(that.nomer) : that.nomer != null) return false;
-        if (date != null ? !date.equals(that.date) : that.date != null) return false;
+        if (!Objects.equals(nomer, that.nomer)) return false;
+        if (!Objects.equals(date, that.date)) return false;
 
         return true;
     }

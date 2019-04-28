@@ -30,8 +30,8 @@ import java.util.List;
 public class ObslClientController {
     private Class currentEntity;
 
-    @FXML
-    public TableView table;
+    @FXML public TableView table;
+    @FXML public Label tableLabel;
 
     @FXML
     public void initialize() {
@@ -45,6 +45,21 @@ public class ObslClientController {
 
             return Double.compare(Double.parseDouble(oa1), Double.parseDouble(oa2));
         });
+    }
+
+    private void _setCurrentEntity(Class c) {
+        currentEntity = c;
+
+        String labelStr = "";
+        if (c == AdresEntity.class) {
+            labelStr = "Адреса";
+        } else if (c == SchetchikEntity.class) {
+            labelStr = "Счетчики";
+        } else if (c == ObjectEntity.class) {
+            labelStr = "Объекты";
+        }
+
+        tableLabel.setText(labelStr);
     }
 
     private void _setDateComparator(TableColumn<?, Date> column) {
@@ -142,15 +157,16 @@ public class ObslClientController {
         _addDeleteColumn();
 
         table.getItems().setAll(allAddresses);
-        currentEntity = AdresEntity.class;
+        _setCurrentEntity(AdresEntity.class);
     }
 
     public void initSchetchikTable() {
         final double NOMER_COL_WIDTH = 100;
-        final double DATE_COL_WIDTH = 250;
+        final double DATE_COL_WIDTH = 150;
 
         List allTip = DbHelper.getAllEntitiesFromTable(TipSchetchikaEntity.class);
         List allTipEl = DbHelper.getAllEntitiesFromTable(TipElektrEntity.class);
+        List allObjects = DbHelper.getAllEntitiesFromTable(ObjectEntity.class);
         List allSchetchik = DbHelper.getAllEntitiesFromTable(SchetchikEntity.class);
 
         TableColumn<SchetchikEntity, String> column1 = new TableColumn<>("Номер");
@@ -163,6 +179,15 @@ public class ObslClientController {
         column1.setOnEditCommit((val) -> {
             SchetchikEntity entity = val.getRowValue();
             entity.setNomer(val.getNewValue());
+            DbHelper.saveOrUpdate(entity);
+        });
+
+        TableColumn<SchetchikEntity, ObjectEntity> column5 = new TableColumn<>("Объект");
+        column5.setCellValueFactory(new PropertyValueFactory<>("object"));
+        column5.setCellFactory(ComboBoxTableCell.forTableColumn(FXCollections.observableArrayList(allObjects)));
+        column5.setOnEditCommit((val) -> {
+            SchetchikEntity entity = val.getRowValue();
+            entity.setObject(val.getNewValue());
             DbHelper.saveOrUpdate(entity);
         });
 
@@ -201,11 +226,11 @@ public class ObslClientController {
             DbHelper.saveOrUpdate(entity);
         });
 
-        table.getColumns().setAll(column1, column2, column3, column4);
+        table.getColumns().setAll(column1, column5, column2, column3, column4);
         _addDeleteColumn();
 
         table.getItems().setAll(allSchetchik);
-        currentEntity = SchetchikEntity.class;
+        _setCurrentEntity(SchetchikEntity.class);
     }
 
     public void initObjectTable() {
@@ -267,7 +292,7 @@ public class ObslClientController {
         _addDeleteColumn();
 
         table.getItems().setAll(allObjects);
-        currentEntity = ObjectEntity.class;
+        _setCurrentEntity(ObjectEntity.class);
     }
 
     public void addRow() {

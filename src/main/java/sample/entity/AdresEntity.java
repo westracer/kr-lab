@@ -1,6 +1,7 @@
 package sample.entity;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "adres", schema = "komraz", catalog = "")
@@ -59,9 +60,9 @@ public class AdresEntity {
         AdresEntity that = (AdresEntity) o;
 
         if (id != that.id) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (kodPoKladr != null ? !kodPoKladr.equals(that.kodPoKladr) : that.kodPoKladr != null) return false;
-        if (raion != null ? !raion.equals(that.raion) : that.raion != null) return false;
+        if (!Objects.equals(name, that.name)) return false;
+        if (!Objects.equals(kodPoKladr, that.kodPoKladr)) return false;
+        if (!Objects.equals(raion, that.raion)) return false;
 
         return true;
     }

@@ -1,6 +1,7 @@
 package sample.entity;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "ur_lico", schema = "komraz", catalog = "")
@@ -80,11 +81,11 @@ public class UrLicoEntity {
         UrLicoEntity that = (UrLicoEntity) o;
 
         if (id != that.id) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (inn != null ? !inn.equals(that.inn) : that.inn != null) return false;
-        if (kpp != null ? !kpp.equals(that.kpp) : that.kpp != null) return false;
-        if (info != null ? !info.equals(that.info) : that.info != null) return false;
-        if (shifr != null ? !shifr.equals(that.shifr) : that.shifr != null) return false;
+        if (!Objects.equals(name, that.name)) return false;
+        if (!Objects.equals(inn, that.inn)) return false;
+        if (!Objects.equals(kpp, that.kpp)) return false;
+        if (!Objects.equals(info, that.info)) return false;
+        if (!Objects.equals(shifr, that.shifr)) return false;
 
         return true;
     }
