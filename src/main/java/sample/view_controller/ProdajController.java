@@ -14,20 +14,21 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
+import javafx.util.Callback;
+import javafx.util.StringConverter;
 import sample.Main;
 import sample.entity.*;
 import sample.util.DateEditingCell;
-import javafx.util.Callback;
-import javafx.util.StringConverter;
 import sample.util.DbHelper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings({"unchecked", "Duplicates"})
-public class ObslClientController {
+// TODO: refactor controllers
+public class ProdajController {
     private Class currentEntity;
 
     @FXML public TableView table;
@@ -35,7 +36,7 @@ public class ObslClientController {
 
     @FXML
     public void initialize() {
-        initAdresTable();
+        initPokazTable();
     }
 
     private void _setDoubleComparator(TableColumn<?, String> column) {
@@ -51,8 +52,8 @@ public class ObslClientController {
         currentEntity = c;
 
         String labelStr = "";
-        if (c == AdresEntity.class) {
-            labelStr = "Адреса";
+        if (c == PokazaniyaEntity.class) {
+            labelStr = "Показания";
         } else if (c == SchetchikEntity.class) {
             labelStr = "Счетчики";
         } else if (c == ObjectEntity.class) {
@@ -107,67 +108,88 @@ public class ObslClientController {
         table.getColumns().add(colBtn);
     }
 
-    public void initAdresTable() {
-        final double KLADR_COL_WIDTH = 200;
+    public void initPokazTable() {
+        final double VALUE_COL_WIDTH = 200;
+        final double DATE_COL_WIDTH = 150;
 
-        List allAddresses = DbHelper.getAllEntitiesFromTable(AdresEntity.class);
-        List allRaions = DbHelper.getAllEntitiesFromTable(RaionEntity.class);
+        List allPokaz = DbHelper.getAllEntitiesFromTable(PokazaniyaEntity.class);
+        List allSchetchik = DbHelper.getAllEntitiesFromTable(SchetchikEntity.class);
 
-        TableColumn<AdresEntity, String> column1 = new TableColumn<>("Адрес");
-        column1.setCellValueFactory(new PropertyValueFactory<>("name"));
+        TableColumn<PokazaniyaEntity, String> column1 = new TableColumn<>("Значение");
+        column1.setMinWidth(VALUE_COL_WIDTH);
+        column1.setMaxWidth(VALUE_COL_WIDTH);
+        column1.setPrefWidth(VALUE_COL_WIDTH);
+        _setDoubleComparator(column1);
+        column1.setCellValueFactory(cellData -> new SimpleStringProperty(Double.toString(cellData.getValue().getValue())));
         column1.setCellFactory(TextFieldTableCell.forTableColumn());
         column1.setOnEditCommit((val) -> {
-            AdresEntity entity = val.getRowValue();
-            entity.setName(val.getNewValue());
-            DbHelper.saveOrUpdate(entity);
+            try {
+                PokazaniyaEntity entity = val.getRowValue();
+                entity.setValue(Double.parseDouble(val.getNewValue()));
+                System.out.println(entity.getId());
+                DbHelper.saveOrUpdate(entity);
+            } catch (NumberFormatException ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Введено некорректное значение");
+                alert.showAndWait();
+
+                table.refresh();
+            }
         });
 
-        TableColumn<AdresEntity, String> column2 = new TableColumn<>("Код по КЛАДР");
-        column2.setMinWidth(KLADR_COL_WIDTH);
-        column2.setMaxWidth(KLADR_COL_WIDTH);
-        column2.setPrefWidth(KLADR_COL_WIDTH);
-        column2.setCellValueFactory(new PropertyValueFactory<>("kodPoKladr"));
-        column2.setCellFactory(TextFieldTableCell.forTableColumn());
+        TableColumn<PokazaniyaEntity, Date> column2 = new TableColumn<>("Дата снятия");
+        _setDateComparator(column2);
+        column2.setCellValueFactory(cellData -> {
+            Date sqlDate = cellData.getValue().getDate();
+            return sqlDate != null ? new SimpleObjectProperty(new Date(sqlDate.getTime())) : null;
+        });
+        column2.setMinWidth(DATE_COL_WIDTH);
+        column2.setMaxWidth(DATE_COL_WIDTH);
+        column2.setPrefWidth(DATE_COL_WIDTH);
+        column2.setCellFactory(param -> new DateEditingCell<>());
         column2.setOnEditCommit((val) -> {
-            AdresEntity entity = val.getRowValue();
-            entity.setKodPoKladr(val.getNewValue());
+            PokazaniyaEntity entity = val.getRowValue();
+            Date date = val.getNewValue();
+            entity.setDate(new java.sql.Date(date.getTime()));
             DbHelper.saveOrUpdate(entity);
         });
 
-        TableColumn<AdresEntity, RaionEntity> column3 = new TableColumn<>("Район");
-        column3.setCellValueFactory(new PropertyValueFactory<>("raion"));
-        column3.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<RaionEntity>() {
+
+        TableColumn<PokazaniyaEntity, SchetchikEntity> column3 = new TableColumn<>("Счетчик");
+        column3.setCellValueFactory(new PropertyValueFactory<>("schetchik"));
+        column3.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<SchetchikEntity>() {
             @Override
-            public String toString(RaionEntity r) {
-                return r != null ? r.toString() : "Выберите район";
+            public String toString(SchetchikEntity r) {
+                return r != null ? r.toString() : "Выберите счетчик";
             }
 
             @Override
-            public RaionEntity fromString(String string) {
+            public SchetchikEntity fromString(String string) {
                 return null;
             }
-        }, FXCollections.observableArrayList(allRaions)));
+        }, FXCollections.observableArrayList(allSchetchik)));
         column3.setOnEditCommit((val) -> {
-            AdresEntity entity = val.getRowValue();
-            entity.setRaion(val.getNewValue());
+            PokazaniyaEntity entity = val.getRowValue();
+            entity.setSchetchik(val.getNewValue());
             DbHelper.saveOrUpdate(entity);
         });
 
         table.getColumns().setAll(column1, column2, column3);
         _addDeleteColumn();
 
-        table.getItems().setAll(allAddresses);
-        _setCurrentEntity(AdresEntity.class);
+        table.getItems().setAll(allPokaz);
+        _setCurrentEntity(PokazaniyaEntity.class);
     }
 
     public void initSchetchikTable() {
         final double NOMER_COL_WIDTH = 100;
+        final double POTR_COL_WIDTH = 200;
         final double DATE_COL_WIDTH = 150;
 
         List allTip = DbHelper.getAllEntitiesFromTable(TipSchetchikaEntity.class);
         List allTipEl = DbHelper.getAllEntitiesFromTable(TipElektrEntity.class);
         List allObjects = DbHelper.getAllEntitiesFromTable(ObjectEntity.class);
         List allSchetchik = DbHelper.getAllEntitiesFromTable(SchetchikEntity.class);
+        List<PokazaniyaEntity> allPokaz = DbHelper.getAllEntitiesFromTable(PokazaniyaEntity.class);
 
         TableColumn<SchetchikEntity, String> column1 = new TableColumn<>("Номер");
         column1.setMinWidth(NOMER_COL_WIDTH);
@@ -226,73 +248,43 @@ public class ObslClientController {
             DbHelper.saveOrUpdate(entity);
         });
 
-        table.getColumns().setAll(column1, column5, column2, column3, column4);
+        TableColumn<SchetchikEntity, String> column6 = new TableColumn<>("Потребление за пред. месяц");
+        column6.setMinWidth(POTR_COL_WIDTH);
+        column6.setMaxWidth(POTR_COL_WIDTH);
+        column6.setPrefWidth(POTR_COL_WIDTH);
+        _setDoubleComparator(column6);
+        column6.setCellValueFactory(cellData -> {
+            final SchetchikEntity sch = cellData.getValue();
+            ArrayList<PokazaniyaEntity> schPokaz = new ArrayList<>();
+
+            // filter pokazaniya
+            for (PokazaniyaEntity pok : allPokaz) {
+                if (pok.getSchetchik().equals(sch)) {
+                    schPokaz.add(pok);
+                }
+            }
+
+            // descending sort
+            schPokaz.sort((o1, o2) ->
+                    o1.getDate() != null ? o2.getDate() != null ? -o1.getDate().compareTo(o2.getDate()) : -1 : 1);
+
+            String res = "";
+            if (schPokaz.size() > 1) {
+                PokazaniyaEntity pokCurr = schPokaz.get(0);
+                PokazaniyaEntity pokPrev = schPokaz.get(1);
+
+                res = Double.toString(pokCurr.getValue() - pokPrev.getValue());
+            }
+
+
+            return new SimpleStringProperty(res);
+        });
+
+        table.getColumns().setAll(column1, column5, column2, column3, column4, column6);
         _addDeleteColumn();
 
         table.getItems().setAll(allSchetchik);
         _setCurrentEntity(SchetchikEntity.class);
-    }
-
-    public void initObjectTable() {
-        final double PLOSHAD_COL_WIDTH = 100;
-
-        List allDogovors = DbHelper.getAllEntitiesFromTable(DogovorEntity.class);
-        List allAddresses = DbHelper.getAllEntitiesFromTable(AdresEntity.class);
-        List allObjects = DbHelper.getAllEntitiesFromTable(ObjectEntity.class);
-
-        TableColumn<ObjectEntity, DogovorEntity> column0 = new TableColumn<>("Договор");
-        column0.setCellValueFactory(new PropertyValueFactory<>("dogovor"));
-        column0.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<DogovorEntity>() {
-            @Override
-            public String toString(DogovorEntity d) {
-                return d != null ? d.toString() : "Выберите договор";
-            }
-
-            @Override
-            public DogovorEntity fromString(String string) {
-                return null;
-            }
-        }, FXCollections.observableArrayList(allDogovors)));
-        column0.setOnEditCommit((val) -> {
-            ObjectEntity entity = val.getRowValue();
-            entity.setDogovor(val.getNewValue());
-            DbHelper.saveOrUpdate(entity);
-        });
-
-        TableColumn<ObjectEntity, String> column1 = new TableColumn<>("Площадь");
-        column1.setMinWidth(PLOSHAD_COL_WIDTH);
-        column1.setMaxWidth(PLOSHAD_COL_WIDTH);
-        column1.setPrefWidth(PLOSHAD_COL_WIDTH);
-        _setDoubleComparator(column1);
-        column1.setCellValueFactory(cellData -> new SimpleStringProperty(Double.toString(cellData.getValue().getPloshad())));
-        column1.setCellFactory(TextFieldTableCell.forTableColumn());
-        column1.setOnEditCommit((val) -> {
-            try {
-                ObjectEntity entity = val.getRowValue();
-                entity.setPloshad(Double.parseDouble(val.getNewValue()));
-                DbHelper.saveOrUpdate(entity);
-            } catch (NumberFormatException ex) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Введено некорректное значение");
-                alert.showAndWait();
-
-                table.refresh();
-            }
-        });
-
-        TableColumn<ObjectEntity, AdresEntity> column2 = new TableColumn<>("Адрес");
-        column2.setCellValueFactory(new PropertyValueFactory<>("adres"));
-        column2.setCellFactory(ComboBoxTableCell.forTableColumn(FXCollections.observableArrayList(allAddresses)));
-        column2.setOnEditCommit((val) -> {
-            ObjectEntity entity = val.getRowValue();
-            entity.setAdres(val.getNewValue());
-            DbHelper.saveOrUpdate(entity);
-        });
-
-        table.getColumns().setAll(column0, column1, column2);
-        _addDeleteColumn();
-
-        table.getItems().setAll(allObjects);
-        _setCurrentEntity(ObjectEntity.class);
     }
 
     public void addRow() {
@@ -302,20 +294,12 @@ public class ObslClientController {
             obj = currentEntity.newInstance();
             DbHelper.saveOrUpdate(obj);
             table.getItems().add(obj);
+
+            System.out.println(((PokazaniyaEntity) obj).getId());
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Невозможно создать строку");
             alert.showAndWait();
         }
-    }
-
-    public void exportDogovor() throws IOException {
-        Stage stage = new Stage();
-        Parent root = FXMLLoader.load(Main.class.getResource("../dogovor_select.fxml"));
-        stage.setScene(new Scene(root));
-        stage.setTitle("Выберите договор");
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initOwner(table.getScene().getWindow());
-        stage.show();
     }
 
     public void exit() {

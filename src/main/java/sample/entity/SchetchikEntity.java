@@ -115,4 +115,9 @@ public class SchetchikEntity {
         result = 31 * result + object.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Счетчик №" + nomer;
+    }
 }

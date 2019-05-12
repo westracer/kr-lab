@@ -10,9 +10,10 @@ public class PokazaniyaEntity {
     private int id;
     private double value;
     private Date date;
-    private int schetchikId;
+    private SchetchikEntity schetchik;
 
     @Id
+    @GeneratedValue(generator="increment")
     @Column(name = "id")
     public int getId() {
         return id;
@@ -42,14 +43,14 @@ public class PokazaniyaEntity {
         this.date = date;
     }
 
-    @Basic
-    @Column(name = "schetchik_id")
-    public int getSchetchikId() {
-        return schetchikId;
+    @ManyToOne
+    @JoinColumn(name = "schetchik_id")
+    public SchetchikEntity getSchetchik() {
+        return schetchik;
     }
 
-    public void setSchetchikId(int schetchikId) {
-        this.schetchikId = schetchikId;
+    public void setSchetchik(SchetchikEntity schetchik) {
+        this.schetchik = schetchik;
     }
 
     @Override
@@ -61,7 +62,7 @@ public class PokazaniyaEntity {
 
         if (id != that.id) return false;
         if (Double.compare(that.value, value) != 0) return false;
-        if (schetchikId != that.schetchikId) return false;
+        if (schetchik != that.schetchik) return false;
         if (!Objects.equals(date, that.date)) return false;
 
         return true;
@@ -75,7 +76,7 @@ public class PokazaniyaEntity {
         temp = Double.doubleToLongBits(value);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + (date != null ? date.hashCode() : 0);
-        result = 31 * result + schetchikId;
+        result = 31 * result + schetchik.hashCode();
         return result;
     }
 }
